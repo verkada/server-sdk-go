@@ -74,6 +74,8 @@ type RTCEngine struct {
 	OnRestarted         func(*livekit.JoinResponse)
 	OnResuming          func()
 	OnResumed           func()
+	OnLocalTrackSubscribed    func(trackSubscribed *livekit.TrackSubscribed)
+	OnSubscribedQualityUpdate func(subscribedQualityUpdate *livekit.SubscribedQualityUpdate)
 }
 
 func NewRTCEngine() *RTCEngine {
@@ -108,6 +110,16 @@ func NewRTCEngine() *RTCEngine {
 	e.client.OnLeave = e.handleLeave
 	e.client.OnTokenRefresh = func(refreshToken string) {
 		e.token.Store(refreshToken)
+	}
+	e.client.OnLocalTrackSubscribed = func(trackSubscribed *livekit.TrackSubscribed) {
+		if f := e.OnLocalTrackSubscribed; f != nil {
+			f(trackSubscribed)
+		}
+	}
+	e.client.OnSubscribedQualityUpdate = func(subscribedQualityUpdate *livekit.SubscribedQualityUpdate) {
+		if f := e.OnSubscribedQualityUpdate; f != nil {
+			f(subscribedQualityUpdate)
+		}
 	}
 	e.client.OnClose = func() { e.handleDisconnect(false) }
 

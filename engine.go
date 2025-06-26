@@ -62,20 +62,21 @@ type RTCEngine struct {
 	JoinTimeout time.Duration
 
 	// callbacks
-	OnDisconnected      func(reason DisconnectionReason)
-	OnMediaTrack        func(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver)
-	OnParticipantUpdate func([]*livekit.ParticipantInfo)
-	OnSpeakersChanged   func([]*livekit.SpeakerInfo)
-	OnDataReceived      func(userPacket *livekit.UserPacket) // Deprecated: Use OnDataPacket instead
-	OnDataPacket        func(identity string, dataPacket DataPacket)
-	OnConnectionQuality func([]*livekit.ConnectionQualityInfo)
-	OnRoomUpdate        func(room *livekit.Room)
-	OnRestarting        func()
-	OnRestarted         func(*livekit.JoinResponse)
-	OnResuming          func()
-	OnResumed           func()
+	OnDisconnected            func(reason DisconnectionReason)
+	OnMediaTrack              func(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver)
+	OnParticipantUpdate       func([]*livekit.ParticipantInfo)
+	OnSpeakersChanged         func([]*livekit.SpeakerInfo)
+	OnDataReceived            func(userPacket *livekit.UserPacket) // Deprecated: Use OnDataPacket instead
+	OnDataPacket              func(identity string, dataPacket DataPacket)
+	OnConnectionQuality       func([]*livekit.ConnectionQualityInfo)
+	OnRoomUpdate              func(room *livekit.Room)
+	OnRestarting              func()
+	OnRestarted               func(*livekit.JoinResponse)
+	OnResuming                func()
+	OnResumed                 func()
 	OnLocalTrackSubscribed    func(trackSubscribed *livekit.TrackSubscribed)
 	OnSubscribedQualityUpdate func(subscribedQualityUpdate *livekit.SubscribedQualityUpdate)
+	OnTranscription           func(*livekit.Transcription)
 }
 
 func NewRTCEngine() *RTCEngine {
@@ -519,6 +520,10 @@ func (e *RTCEngine) handleDataPacket(msg webrtc.DataChannelMessage) {
 	case *livekit.DataPacket_SipDtmf:
 		if e.OnDataPacket != nil {
 			e.OnDataPacket(identity, msg.SipDtmf)
+		}
+	case *livekit.DataPacket_Transcription:
+		if e.OnTranscription != nil {
+			e.OnTranscription(msg.Transcription)
 		}
 	}
 }

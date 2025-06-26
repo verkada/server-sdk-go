@@ -201,6 +201,7 @@ func NewRoom(callback *RoomCallback) *Room {
 	engine.client.OnTrackRemoteMuted = r.handleTrackRemoteMuted
 	engine.OnLocalTrackSubscribed = r.handleLocalTrackSubscribed
 	engine.OnSubscribedQualityUpdate = r.handleSubscribedQualityUpdate
+	engine.OnTranscription = r.handleTranscriptionReceived
 
 	return r
 }
@@ -862,4 +863,27 @@ func unpackStreamID(packed string) (participantId string, trackId string) {
 		return parts[0], packed[len(parts[0])+1:]
 	}
 	return packed, ""
+}
+
+func (r *Room) handleTranscriptionReceived(transcription *livekit.Transcription) {
+	var (
+		p           Participant
+		publication TrackPublication
+	)
+
+	if transcription.TranscribedParticipantIdentity == r.LocalParticipant.Identity() {
+		p = r.LocalParticipant
+		publication = r.LocalParticipant.getPublication(transcription.TrackId)
+	} else {
+		rp := r.GetParticipantByIdentity(transcription.TranscribedParticipantIdentity)
+		if rp == nil {
+			r.log.Debugw("recieved transcription for unknown participant", "participant", transcription.TranscribedParticipantIdentity)
+			return
+		}
+		publication = rp.getPublication(transcription.TrackId)
+		p = rp
+	}
+	transcriptionSegments := ExtractTranscriptionSegments(transcription)
+
+	r.callback.OnTranscriptionReceived(transcriptionSegments, p, publication)
 }

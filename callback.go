@@ -42,6 +42,7 @@ type ParticipantCallback struct {
 	OnTrackUnpublished        func(publication *RemoteTrackPublication, rp *RemoteParticipant)
 	OnDataReceived            func(data []byte, params DataReceiveParams) // Deprecated: Use OnDataPacket instead
 	OnDataPacket              func(data DataPacket, params DataReceiveParams)
+	OnTranscriptionReceived   func(transcriptionSegments []*TranscriptionSegment, p Participant, publication TrackPublication)
 }
 
 func NewParticipantCallback() *ParticipantCallback {
@@ -59,6 +60,7 @@ func NewParticipantCallback() *ParticipantCallback {
 		OnTrackUnpublished:         func(publication *RemoteTrackPublication, rp *RemoteParticipant) {},
 		OnDataReceived:             func(data []byte, params DataReceiveParams) {},
 		OnDataPacket:               func(data DataPacket, params DataReceiveParams) {},
+		OnTranscriptionReceived:    func(transcriptionSegments []*TranscriptionSegment, p Participant, publication TrackPublication) {},
 	}
 }
 
@@ -90,6 +92,10 @@ func (cb *ParticipantCallback) Merge(other *ParticipantCallback) {
 	if other.OnTrackSubscriptionFailed != nil {
 		cb.OnTrackSubscriptionFailed = other.OnTrackSubscriptionFailed
 	}
+	if other.OnTranscriptionReceived != nil {
+		cb.OnTranscriptionReceived = other.OnTranscriptionReceived
+	}
+
 	if other.OnTrackPublished != nil {
 		cb.OnTrackPublished = other.OnTrackPublished
 	}

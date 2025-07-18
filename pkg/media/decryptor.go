@@ -58,11 +58,11 @@ func (d *CustomDecryptor) DecryptSample(payload []byte) ([]byte, error) {
 }
 
 type decryptionHandler struct {
-	handler   rtp.Handler
+	handler   rtp.HandlerCloser
 	decryptor Decryptor
 }
 
-func newDecryptionHandler(h rtp.Handler, decryptor Decryptor) *decryptionHandler {
+func newDecryptionHandler(h rtp.HandlerCloser, decryptor Decryptor) *decryptionHandler {
 	return &decryptionHandler{
 		handler:   h,
 		decryptor: decryptor,
@@ -84,4 +84,8 @@ func (d *decryptionHandler) HandleRTP(h *rtp.Header, payload []byte) error {
 
 func (d *decryptionHandler) String() string {
 	return "DecryptionHandler " + d.handler.String()
+}
+
+func (d *decryptionHandler) Close() {
+	d.handler.Close()
 }

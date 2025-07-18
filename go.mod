@@ -1,4 +1,4 @@
-module github.com/livekit/server-sdk-go/v2
+module github.com/verkada/server-sdk-go/v2
 
 go 1.24.2
 
@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/livekit/mageutil v0.0.0-20250511045019-0f1ff63f7731
-	github.com/livekit/media-sdk v0.0.0-20250518151703-b07af88637c5
+	github.com/livekit/media-sdk v0.0.0-20250620175140-c86da91c22a2
 	github.com/livekit/mediatransportutil v0.0.0-20250519131108-fb90f5acfded
 	github.com/livekit/protocol v1.39.0
 	github.com/magefile/mage v1.15.0
@@ -85,3 +85,5 @@ require (
 	gopkg.in/hraban/opus.v2 v2.0.0-20230925203106-0188a62cb302 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/livekit/server-sdk-go/v2 => github.com/verkada/server-sdk-go/v2 jitter-buffer-fix

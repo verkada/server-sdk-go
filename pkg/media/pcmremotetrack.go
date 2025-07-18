@@ -148,7 +148,7 @@ func NewPCMRemoteTrack(track *webrtc.TrackRemote, writer PCMRemoteTrackWriter, o
 
 func (t *PCMRemoteTrack) processSamples(handleJitter bool) {
 	// Handler takes RTP packets and writes the payload to opusWriter
-	var h rtp.Handler = rtp.NewMediaStreamIn[opus.Sample](t.opusWriter)
+	var h rtp.HandlerCloser = rtp.NewMediaStreamIn[opus.Sample](t.opusWriter)
 
 	if t.decryptor != nil {
 		// Ideally, we should check if the track is encrypted with the
